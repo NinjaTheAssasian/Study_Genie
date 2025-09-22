@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>History - StudyGenie</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #6366f1; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; --danger: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, var(--dark) 0%, #1e1b4b 100%); color: var(--light); min-height: 100vh; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        nav { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 30px; text-align: center; }
+        nav a { color: var(--light); text-decoration: none; margin: 0 15px; padding: 8px 20px; background: rgba(99, 102, 241, 0.1); border-radius: 20px; }
+        .hero { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 25px; padding: 40px; }
+        h2 { text-align: center; margin-bottom: 30px; }
+        .history-section { margin-bottom: 40px; }
+        .history-item { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 20px; margin: 15px 0; border-radius: 15px; }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .delete-btn { background: rgba(239, 68, 68, 0.2); color: white; border: none; padding: 5px 10px; border-radius: 10px; cursor: pointer; }
+        .clear-all-btn { 
+            background: var(--danger); 
+            color: white; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            margin: 30px auto 0; 
+            display: block;
+            font-weight: 600;
+        }
+        .empty-state { text-align: center; padding: 40px; color: var(--gray); }
+        .download-link { color: var(--primary); text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/upload"><i class="fas fa-file-pdf"></i> Upload</a>
+            <a href="/quiz"><i class="fas fa-brain"></i> Quiz</a>
+            <a href="/schedule"><i class="fas fa-calendar"></i> Schedule</a>
+            <a href="/history"><i class="fas fa-history"></i> History</a>
+        </nav>
+
+        <div class="hero">
+            <h2><i class="fas fa-history"></i> Your Study History</h2>
+
+            <div class="history-section">
+                <h3>📄 Summaries</h3>
+                {% if summaries and summaries|length > 0 %}
+                    {% for item in summaries %}
+                    <div class="history-item">
+                        <div class="history-header">
+                            <strong>Generated: {{ item.timestamp }}</strong>
+                            <button onclick="deleteItem('summaries', {{ loop.index0 }})" class="delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                        <div>{{ item.summary[:200] }}{% if item.summary|length > 200 %}...{% endif %}</div>
+                        <a href="/download_summary?text={{ item.summary | urlencode }}" class="download-link">
+                            <i class="fas fa-download"></i> Download TXT
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No summaries saved yet.</div>
+                {% endif %}
+            </div>
+
+            <div class="history-section">
+                <h3>🧠 Quizzes</h3>
+                {% if quizzes and quizzes|length > 0 %}
+                    {% for item in quizzes %}
+                    <div class="history-item">
+                        <div class="history-header">
+                            <strong>{{ item.topic }} ({{ item.questions|length }} Qs) - {{ item.timestamp }}</strong>
+                            <button onclick="deleteItem('quizzes', {{ loop.index0 }})" class="delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                        {% for q in item.questions %}
+                        <div style="margin: 10px 0; padding-left: 15px; border-left: 3px solid var(--primary);">
+                            Q{{ q.id }}: {{ q.question }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No quizzes saved yet.</div>
+                {% endif %}
+            </div>
+
+            <div class="history-section">
+                <h3>📅 Schedules</h3>
+                {% if schedules and schedules|length > 0 %}
+                    {% for item in schedules %}
+                    <div class="history-item">
+                        <div class="history-header">
+                            <strong>Exam: {{ item.exam_date }} | {{ item.hours_per_day }}h/day - {{ item.timestamp }}</strong>
+                            <button onclick="deleteItem('schedules', {{ loop.index0 }})" class="delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                        {% for s in item.schedule %}
+                        <div style="margin: 15px 0; padding: 10px; background: rgba(6, 182, 212, 0.1); border-radius: 8px;">
+                            <strong>{{ s.subject }}</strong> ({{ s.priority }}) - {{ s.daily_hours }}h/day → {{ s.recommended_hours }}h total
+                            <div style="font-size: 0.9rem; margin-top: 5px; color: var(--gray);">💡 {{ s.study_tips }}</div>
+                        </div>
+                        {% endfor %}
+                        <a href="#" onclick="exportHistorySchedule({{ loop.index0 }}); return false;" class="download-link">
+                            <i class="fas fa-file-csv"></i> Export as CSV
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">No schedules saved yet.</div>
+                {% endif %}
+            </div>
+
+            <button onclick="clearAllHistory()" class="clear-all-btn">
+                <i class="fas fa-trash-alt"></i> Clear All History
+            </button>
+        </div>
+    </div>
+
+    <script>
+        async function deleteItem(type, index) {
+            if (!confirm('Are you sure you want to delete this item?')) return;
+            
+            const response = await fetch('/delete_history', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type, index})
+            });
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Failed to delete item');
+            }
+        }
+
+        async function clearAllHistory() {
+            if (!confirm('Are you sure you want to clear ALL history? This cannot be undone.')) return;
+            
+            const response = await fetch('/clear_history', {method: 'POST'});
+            
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Failed to clear history');
+            }
+        }
+
+        function exportHistorySchedule(index) {
+            fetch('/get_schedule_csv/' + index)
+                .then(response => response.text())
+                .then(csvContent => {
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", "study_schedule_export.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+        }
+    </script>
+</body>
+</html>

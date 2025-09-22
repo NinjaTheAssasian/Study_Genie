@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Planner - StudyGenie</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #6366f1; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; --success: #10b981; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, var(--dark) 0%, #1e1b4b 100%); color: var(--light); min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        nav { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 30px; text-align: center; }
+        nav a { color: var(--light); text-decoration: none; margin: 0 15px; padding: 8px 20px; background: rgba(99, 102, 241, 0.1); border-radius: 20px; }
+        .hero { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 25px; padding: 50px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 15px; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(99, 102, 241, 0.3); border-radius: 15px; color: var(--light); font-size: 1rem; font-family: inherit; }
+        .form-group textarea { min-height: 120px; }
+        .btn { background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; padding: 15px 40px; border: none; border-radius: 25px; cursor: pointer; width: 100%; margin: 20px 0; }
+        .schedule-item { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 25px; margin: 15px 0; border-radius: 20px; }
+        .priority { padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .priority-high { background: #ef4444; color: white; }
+        .priority-medium { background: #f59e0b; color: white; }
+        .priority-normal { background: var(--success); color: white; }
+        .error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 20px; border-radius: 10px; color: #fca5a5; }
+        .export-btn {
+            background: rgba(6, 182, 212, 0.2);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1rem;
+            display: block;
+            width: fit-content;
+            margin: 20px auto 0;
+        }
+        .save-schedule-btn {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/upload"><i class="fas fa-file-pdf"></i> Upload</a>
+            <a href="/quiz"><i class="fas fa-brain"></i> Quiz</a>
+            <a href="/schedule"><i class="fas fa-calendar"></i> Schedule</a>
+            <a href="/history"><i class="fas fa-history"></i> History</a>
+        </nav>
+
+        <div class="hero">
+            <h2 style="text-align: center; margin-bottom: 30px;"><i class="fas fa-calendar-alt"></i> AI Study Planner</h2>
+
+            <form id="scheduleForm">
+                <div class="form-group">
+                    <label style="color: var(--light); margin-bottom: 10px; display: block;">📖 Your Subjects (one per line):</label>
+                    <textarea id="subjects" placeholder="Data Structures&#10;Algorithms&#10;Database Systems&#10;Computer Networks" required></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label style="color: var(--light); margin-bottom: 10px; display: block;">📆 Exam Date:</label>
+                        <input type="date" id="examDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color: var(--light); margin-bottom: 10px; display: block;">⏰ Hours per Day:</label>
+                        <select id="hoursPerDay">
+                            <option value="2">2 hours</option>
+                            <option value="4" selected>4 hours</option>
+                            <option value="6">6 hours</option>
+                            <option value="8">8 hours</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">
+                    <i class="fas fa-magic"></i> Generate Schedule
+                </button>
+            </form>
+
+            <div id="scheduleResults" style="display:none;">
+                <h3 style="text-align: center; margin: 30px 0;">📊 Your Personalized Study Plan</h3>
+                <div id="scheduleList"></div>
+                <button onclick="saveScheduleToHistory()" class="save-schedule-btn">
+                    <i class="fas fa-save"></i> Save to History
+                </button>
+                <button onclick="exportScheduleToCSV()" class="export-btn">
+                    <i class="fas fa-file-csv"></i> Export as CSV
+                </button>
+            </div>
+
+            <div id="error" class="error" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Set minimum date to today
+        document.getElementById('examDate').min = new Date().toISOString().split('T')[0];
+
+        let currentSchedule = null;
+
+        document.getElementById('scheduleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const subjectsText = document.getElementById('subjects').value;
+            const subjects = subjectsText.split('\n').filter(s => s.trim().length > 0);
+            const examDate = document.getElementById('examDate').value;
+            const hoursPerDay = parseInt(document.getElementById('hoursPerDay').value);
+
+            if (subjects.length === 0) {
+                document.getElementById('error').textContent = 'Please enter at least one subject';
+                document.getElementById('error').style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/generate_schedule', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({subjects, exam_date: examDate, hours_per_day: hoursPerDay})
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    document.getElementById('error').textContent = data.error;
+                    document.getElementById('error').style.display = 'block';
+                } else {
+                    currentSchedule = data.schedule;
+                    displaySchedule(data.schedule);
+                    document.getElementById('error').style.display = 'none';
+                }
+            } catch (error) {
+                document.getElementById('error').textContent = 'Error generating schedule. Please try again.';
+                document.getElementById('error').style.display = 'block';
+            }
+        });
+
+        function displaySchedule(schedule) {
+            const scheduleList = document.getElementById('scheduleList');
+            scheduleList.innerHTML = '';
+
+            if (schedule && schedule.length > 0) {
+                schedule.forEach(item => {
+                    const scheduleItem = document.createElement('div');
+                    scheduleItem.className = 'schedule-item';
+                    scheduleItem.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <strong style="font-size: 1.2rem;">${item.subject}</strong>
+                            <span class="priority priority-${item.priority.toLowerCase()}">${item.priority}</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; color: var(--primary);">${item.daily_hours}h</div>
+                                <div style="color: var(--gray);">Daily</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; color: var(--primary);">${item.recommended_hours}h</div>
+                                <div style="color: var(--gray);">Total</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; color: var(--primary);">${item.days_allocated || 'N/A'}</div>
+                                <div style="color: var(--gray);">Days</div>
+                            </div>
+                        </div>
+                        <div style="padding: 15px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 12px;">
+                            💡 ${item.study_tips}
+                        </div>
+                    `;
+                    scheduleList.appendChild(scheduleItem);
+                });
+
+                document.getElementById('scheduleResults').style.display = 'block';
+            }
+        }
+
+        function saveScheduleToHistory() {
+            if (!currentSchedule) return;
+            const subjects = Array.from(document.querySelectorAll('#scheduleList .schedule-item')).map(el => 
+                el.querySelector('strong').innerText
+            );
+            fetch('/save_schedule', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    subjects: subjects,
+                    exam_date: document.getElementById('examDate').value,
+                    hours_per_day: parseInt(document.getElementById('hoursPerDay').value),
+                    schedule: currentSchedule
+                })
+            }).then(r => r.json()).then(data => {
+                if (data.success) alert('✅ Schedule saved to history!');
+                else alert('❌ Failed to save schedule');
+            });
+        }
+
+        function exportScheduleToCSV() {
+            if (!currentSchedule) return;
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "Subject,Priority,Daily Hours,Total Hours,Days,Study Tips\n"
+                + currentSchedule.map(item => 
+                    `"${item.subject}","${item.priority}",${item.daily_hours},${item.recommended_hours},${item.days_allocated},"${item.study_tips.replace(/"/g, '""')}"`.replace(/#/g, '')
+                ).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "study_schedule.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

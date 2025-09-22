@@ -1,22 +1,32 @@
-# 🧞‍♂️ StudyGenie Enhanced - AI Study Assistant
+# 🧞‍♂️ StudyGenie - FIXED VERSION
 
-## 🎯 For AIGNITION 2025 - Track 4: AI for Productivity
+## 🔧 What Was Fixed:
+- ✅ PDF Summarizer now works properly with better error handling
+- ✅ Study Planner fixed with proper date validation  
+- ✅ File size limits (max 5MB) to prevent crashes
+- ✅ Better error messages for users
+- ✅ Improved text extraction from PDFs
 
-### ✨ Features:
-- 🌙 Beautiful dark theme with animations
-- 📄 AI-powered PDF summarization  
-- 🧠 Intelligent quiz generation
-- 📅 Smart study schedule planning
-- 📱 Mobile-responsive design
-- ⚡ Modern glassmorphism UI
+## 🚀 Quick Setup:
+1. `pip install Flask PyPDF2`
+2. `python app.py`  
+3. Go to `http://localhost:5000`
 
-### 🚀 Quick Setup:
-1. Install dependencies: `pip install Flask PyPDF2`
-2. Run the app: `python app.py`
-3. Open: `http://localhost:5000`
+## 🎯 For AIGNITION 2025:
+This version is presentation-ready with all core features working!
 
-### 🏆 Perfect for AIGNITION 2025!
-This project showcases modern web design with AI functionality,
-ideal for winning the productivity track of the competition.
+## 📋 What Works:
+- ✅ Beautiful homepage with animations
+- ✅ PDF upload and summarization (FIXED)
+- ✅ Quiz generation (works perfectly)
+- ✅ Study schedule planning (FIXED)
+- ✅ Mobile-responsive dark theme
 
-Built with ❤️ for IIT Patna students
+## 💡 Demo Strategy:
+1. Show homepage - impressive design
+2. Upload a small PDF (under 5MB) - get summary
+3. Generate quiz questions - works instantly  
+4. Create study schedule - now works properly
+5. Emphasize beautiful UI and practical features
+
+Ready to win AIGNITION 2025! 🏆

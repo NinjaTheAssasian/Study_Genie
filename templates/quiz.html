@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Generator - StudyGenie</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #6366f1; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, var(--dark) 0%, #1e1b4b 100%); color: var(--light); min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        nav { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 30px; text-align: center; }
+        nav a { color: var(--light); text-decoration: none; margin: 0 15px; padding: 8px 20px; background: rgba(99, 102, 241, 0.1); border-radius: 20px; }
+        .hero { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 25px; padding: 50px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group input, .form-group select { width: 100%; padding: 15px; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(99, 102, 241, 0.3); border-radius: 15px; color: var(--light); font-size: 1rem; }
+        .btn { background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; padding: 15px 40px; border: none; border-radius: 25px; cursor: pointer; width: 100%; margin: 20px 0; }
+        .question-item { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 25px; margin: 20px 0; border-radius: 20px; }
+        .save-quiz-btn {
+            background: rgba(6, 182, 212, 0.2);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/upload"><i class="fas fa-file-pdf"></i> Upload</a>
+            <a href="/quiz"><i class="fas fa-brain"></i> Quiz</a>
+            <a href="/schedule"><i class="fas fa-calendar"></i> Schedule</a>
+            <a href="/history"><i class="fas fa-history"></i> History</a>
+        </nav>
+
+        <div class="hero">
+            <h2 style="text-align: center; margin-bottom: 30px;"><i class="fas fa-brain"></i> AI Quiz Generator</h2>
+
+            <form id="quizForm">
+                <div class="form-group">
+                    <input type="text" id="topic" placeholder="Enter study topic (e.g., Data Structures)" required>
+                </div>
+                <div class="form-group">
+                    <select id="numQuestions">
+                        <option value="3">3 Questions</option>
+                        <option value="5" selected>5 Questions</option>
+                        <option value="8">8 Questions</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-magic"></i> Generate Quiz
+                </button>
+            </form>
+
+            <div id="quizResults" style="display:none;">
+                <h3 style="text-align: center; margin: 30px 0;">📋 Your AI-Generated Quiz</h3>
+                <div id="questionsList"></div>
+                <button onclick="saveQuizToHistory()" class="save-quiz-btn">
+                    <i class="fas fa-save"></i> Save to History
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuiz = null;
+
+        document.getElementById('quizForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const topic = document.getElementById('topic').value;
+            const numQuestions = document.getElementById('numQuestions').value;
+
+            try {
+                const response = await fetch('/generate_quiz', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({topic, num_questions: parseInt(numQuestions)})
+                });
+                const data = await response.json();
+                currentQuiz = data.questions;
+                displayQuiz(data.questions);
+            } catch (error) {
+                alert('Error generating quiz');
+            }
+        });
+
+        function displayQuiz(questions) {
+            const questionsList = document.getElementById('questionsList');
+            questionsList.innerHTML = '';
+
+            questions.forEach((q) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                questionDiv.innerHTML = `
+                    <strong>Q${q.id}:</strong> ${q.question}
+                    <br><br>
+                    <textarea placeholder="Write your answer here..." style="width: 100%; height: 80px; padding: 10px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; color: white;"></textarea>
+                `;
+                questionsList.appendChild(questionDiv);
+            });
+
+            document.getElementById('quizResults').style.display = 'block';
+        }
+
+        function saveQuizToHistory() {
+            if (!currentQuiz) return;
+            fetch('/save_quiz', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    topic: document.getElementById('topic').value,
+                    questions: currentQuiz
+                })
+            }).then(r => r.json()).then(data => {
+                if (data.success) alert('✅ Quiz saved to history!');
+                else alert('❌ Failed to save quiz');
+            });
+        }
+    </script>
+</body>
+</html>

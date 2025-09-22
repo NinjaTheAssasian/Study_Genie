@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF Summarizer - StudyGenie</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #6366f1; --dark: #0f172a; --light: #f8fafc; --gray: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, var(--dark) 0%, #1e1b4b 100%); color: var(--light); min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        nav { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 30px; text-align: center; }
+        nav a { color: var(--light); text-decoration: none; margin: 0 15px; padding: 8px 20px; background: rgba(99, 102, 241, 0.1); border-radius: 20px; }
+        .hero { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 25px; padding: 50px; }
+        .upload-area { border: 2px dashed rgba(99, 102, 241, 0.5); padding: 40px; text-align: center; border-radius: 20px; margin: 20px 0; }
+        .btn { background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; padding: 15px 40px; border: none; border-radius: 25px; cursor: pointer; font-size: 1.1rem; }
+        .summary-box { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 30px; border-radius: 20px; margin: 20px 0; position: relative; }
+        .action-buttons { margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.2s;
+        }
+        .copy-btn { background: rgba(99, 102, 241, 0.2); color: white; }
+        .download-btn { background: rgba(16, 185, 129, 0.2); color: white; }
+        .copy-btn:hover { background: rgba(99, 102, 241, 0.4); }
+        .download-btn:hover { background: rgba(16, 185, 129, 0.4); }
+        .error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 20px; border-radius: 10px; color: #fca5a5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/upload"><i class="fas fa-file-pdf"></i> Upload</a>
+            <a href="/quiz"><i class="fas fa-brain"></i> Quiz</a>
+            <a href="/schedule"><i class="fas fa-calendar"></i> Schedule</a>
+            <a href="/history"><i class="fas fa-history"></i> History</a>
+        </nav>
+
+        <div class="hero">
+            <h2 style="text-align: center; margin-bottom: 30px;"><i class="fas fa-magic"></i> AI PDF Summarizer</h2>
+
+            <form method="post" enctype="multipart/form-data">
+                <div class="upload-area">
+                    <div style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Upload Your Study Materials</h3>
+                    <p>Select a PDF file to summarize (Max: 5MB)</p>
+                    <input type="file" name="file" accept=".pdf" required style="width: 100%; padding: 15px; margin: 20px 0; background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(99, 102, 241, 0.3); border-radius: 15px; color: var(--light);">
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-sparkles"></i> Generate Summary
+                </button>
+            </form>
+
+            {% if error %}
+            <div class="error">
+                <strong>Error:</strong> {{ error }}
+            </div>
+            {% endif %}
+
+            {% if summary %}
+            <div class="summary-box">
+                <h3 style="margin-bottom: 15px;">📝 Summary Generated Successfully</h3>
+                <div id="summaryText">{{ summary }}</div>
+                <div class="action-buttons">
+                    <button onclick="copySummary()" class="action-btn copy-btn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <a href="/download_summary?text={{ summary | urlencode }}" class="action-btn download-btn" download>
+                        <i class="fas fa-download"></i> Download TXT
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function copySummary() {
+            const summaryText = document.getElementById('summaryText').innerText;
+            navigator.clipboard.writeText(summaryText).then(() => {
+                alert('Summary copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+    </script>
+</body>
+</html>
