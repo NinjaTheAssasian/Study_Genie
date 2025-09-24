@@ -58,7 +58,7 @@
             </form>
 
             <div id="quizResults" style="display:none;">
-                <h3 style="text-align: center; margin: 30px 0;">📋 Your AI-Generated Quiz</h3>
+                <h3 style="text-align: center; margin: 30px 0;">ðŸ“‹ Your AI-Generated Quiz</h3>
                 <div id="questionsList"></div>
                 <button onclick="saveQuizToHistory()" class="save-quiz-btn">
                     <i class="fas fa-save"></i> Save to History
@@ -117,8 +117,8 @@
                     questions: currentQuiz
                 })
             }).then(r => r.json()).then(data => {
-                if (data.success) alert('✅ Quiz saved to history!');
-                else alert('❌ Failed to save quiz');
+                if (data.success) alert('âœ… Quiz saved to history!');
+                else alert('âŒ Failed to save quiz');
             });
         }
     </script>

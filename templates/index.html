@@ -3,117 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyGenie - AI Study Assistant</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>StudyGenie - Ultimate 3D AI Study Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
         :root {
-            --primary: #6366f1;
-            --secondary: #8b5cf6;
-            --accent: #06b6d4;
-            --dark: #0f172a;
-            --light: #f8fafc;
-            --gray: #64748b;
+            --primary: #6366f1; --secondary: #8b5cf6; --accent: #06b6d4; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --dark: #0f0f23; --darker: #05050f;
+            --light: #f8fafc; --gray: #64748b; --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--dark) 0%, #1e1b4b 100%);
-            color: var(--light);
-            min-height: 100vh;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #1a1a3a 100%);
+            color: var(--light); min-height: 100vh; overflow-x: hidden; position: relative;
+            perspective: 1000px;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        header { text-align: center; margin-bottom: 50px; }
+        
+        /* 3D Animated Background */
+        .bg-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 60%);
+            animation: backgroundPulse 20s ease-in-out infinite;
+        }
+        
+        @keyframes backgroundPulse {
+            0%, 100% { 
+                transform: translateZ(0) scale(1) rotate(0deg);
+                filter: blur(0px) hue-rotate(0deg);
+            }
+            25% { 
+                transform: translateZ(50px) scale(1.1) rotate(1deg);
+                filter: blur(2px) hue-rotate(30deg);
+            }
+            50% { 
+                transform: translateZ(-30px) scale(0.95) rotate(-1deg);
+                filter: blur(1px) hue-rotate(-20deg);
+            }
+            75% { 
+                transform: translateZ(30px) scale(1.05) rotate(0.5deg);
+                filter: blur(3px) hue-rotate(45deg);
+            }
+        }
+        
+        /* Floating 3D Particles */
+        .floating-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            pointer-events: none; perspective: 2000px;
+        }
+        
+        .particle {
+            position: absolute; background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%; opacity: 0.1; animation: float3D 25s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+        
+        .particle:nth-child(1) { 
+            width: 120px; height: 120px; top: 10%; left: 15%; 
+            animation-delay: 0s; animation-duration: 20s;
+        }
+        .particle:nth-child(2) { 
+            width: 80px; height: 80px; top: 60%; right: 10%; 
+            animation-delay: -8s; animation-duration: 25s;
+        }
+        .particle:nth-child(3) { 
+            width: 100px; height: 100px; bottom: 20%; left: 10%; 
+            animation-delay: -15s; animation-duration: 30s;
+        }
+        
+        @keyframes float3D {
+            0%, 100% { 
+                transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+                opacity: 0.1;
+            }
+            25% { 
+                transform: translate3d(30px, -40px, 100px) rotateX(90deg) rotateY(45deg) rotateZ(15deg);
+                opacity: 0.2;
+            }
+            50% { 
+                transform: translate3d(-20px, 20px, -80px) rotateX(180deg) rotateY(90deg) rotateZ(-20deg);
+                opacity: 0.15;
+            }
+            75% { 
+                transform: translate3d(40px, 30px, 60px) rotateX(270deg) rotateY(135deg) rotateZ(25deg);
+                opacity: 0.25;
+            }
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; }
+        
+        /* Enhanced 3D Header */
+        header {
+            text-align: center; margin-bottom: 60px; padding: 60px 40px;
+            background: var(--glass); backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 30px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative; overflow: hidden; transform-style: preserve-3d;
+            animation: headerFloat 8s ease-in-out infinite;
+        }
+        
+        @keyframes headerFloat {
+            0%, 100% { transform: translateZ(0) rotateX(0deg) rotateY(0deg); }
+            50% { transform: translateZ(20px) rotateX(2deg) rotateY(1deg); }
+        }
+        
         .logo {
-            font-size: 4rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+            font-size: 4.8rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            background-size: 300% 300%; background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; margin-bottom: 20px; position: relative;
+            transform: perspective(1000px) rotateX(10deg);
+            animation: logoGlow 6s ease-in-out infinite, gradientShift 8s ease-in-out infinite;
         }
+        
+        @keyframes logoGlow {
+            0%, 100% { 
+                transform: perspective(1000px) rotateX(10deg) translateY(0px) scale(1);
+                filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.3));
+            }
+            50% { 
+                transform: perspective(1000px) rotateX(15deg) translateY(-15px) scale(1.05);
+                filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.5));
+            }
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .logo::before {
+            content: '🧞‍♂️'; position: absolute; top: -30px; left: -100px; 
+            font-size: 6rem; animation: genieFloat 5s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
+        }
+        
+        @keyframes genieFloat {
+            0%, 100% { transform: translate3d(0, 0, 0) rotateZ(0deg) scale(1); }
+            50% { transform: translate3d(-5px, -40px, -30px) rotateZ(-3deg) scale(0.95); }
+        }
+        
+        /* Enhanced Navigation */
         nav {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 20px;
-            padding: 15px 0;
-            margin-bottom: 50px;
+            background: var(--glass); backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border); border-radius: 25px;
+            padding: 25px; margin-bottom: 60px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: navFloat 12s ease-in-out infinite;
         }
-        nav ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
+        
+        @keyframes navFloat {
+            0%, 100% { transform: translateZ(0) rotateX(0deg); }
+            50% { transform: translateZ(10px) rotateX(1deg); }
         }
+        
+        nav ul { list-style: none; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        
         nav a {
-            color: var(--light);
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            transition: all 0.3s;
+            color: var(--light); text-decoration: none; padding: 18px 35px;
+            border-radius: 20px; background: var(--glass); border: 1px solid var(--glass-border);
+            font-weight: 600; font-size: 1.1rem; display: inline-block;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; overflow: hidden; transform-style: preserve-3d;
         }
+        
         nav a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            transform: translate3d(0, -12px, 30px) rotateX(10deg) rotateY(5deg) scale(1.08);
+            box-shadow: 0 30px 60px rgba(99, 102, 241, 0.4), 0 0 50px rgba(99, 102, 241, 0.3);
+            border-color: var(--primary);
         }
+        
+        nav a i { 
+            margin-right: 8px; transition: all 0.3s ease;
+        }
+        
+        nav a:hover i {
+            transform: rotateY(360deg) scale(1.2);
+            text-shadow: 0 0 15px currentColor;
+        }
+        
+        /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 27, 75, 0.9));
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 25px;
-            padding: 60px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            background: var(--glass); backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border); border-radius: 35px;
+            padding: 100px 70px; box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+            position: relative; overflow: hidden; transform-style: preserve-3d;
+            animation: heroBreath 15s ease-in-out infinite;
         }
+        
+        @keyframes heroBreath {
+            0%, 100% { transform: translateZ(0) scale(1); }
+            50% { transform: translateZ(20px) scale(1.02); }
+        }
+        
+        .hero-title {
+            font-size: 4rem; font-weight: 900; text-align: center; margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--light), var(--accent), var(--primary));
+            background-size: 200% 200%; background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; transform: perspective(800px) rotateX(5deg);
+            animation: titleWave 8s ease-in-out infinite;
+        }
+        
+        @keyframes titleWave {
+            0%, 100% { transform: perspective(800px) rotateX(5deg) translateY(0); }
+            50% { transform: perspective(800px) rotateX(8deg) translateY(-10px); }
+        }
+        
+        /* Feature Cards with 3D Effects */
         .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 50px; margin-top: 80px;
         }
+        
         .feature-card {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 27, 75, 0.8));
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s;
+            background: var(--glass); backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 30px;
+            padding: 60px 45px; text-align: center;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; overflow: hidden; transform-style: preserve-3d;
+            animation: cardFloat 20s ease-in-out infinite;
         }
-        .feature-card:hover { transform: translateY(-10px); }
+        
+        .feature-card:nth-child(1) { animation-delay: 0s; }
+        .feature-card:nth-child(2) { animation-delay: -5s; }
+        .feature-card:nth-child(3) { animation-delay: -10s; }
+        .feature-card:nth-child(4) { animation-delay: -15s; }
+        
+        @keyframes cardFloat {
+            0%, 100% { transform: translateZ(0) rotateX(0deg) rotateY(0deg); }
+            25% { transform: translateZ(20px) rotateX(5deg) rotateY(2deg); }
+            50% { transform: translateZ(-10px) rotateX(-3deg) rotateY(-1deg); }
+            75% { transform: translateZ(15px) rotateX(4deg) rotateY(3deg); }
+        }
+        
+        .feature-card:hover {
+            transform: perspective(1000px) rotateX(15deg) rotateY(8deg) translateZ(50px) scale(1.05);
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5), 0 0 80px rgba(99, 102, 241, 0.3);
+            border-color: var(--primary);
+        }
+        
+        .feature-icon {
+            font-size: 5rem; margin-bottom: 30px; display: block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: iconSpin 15s ease-in-out infinite; transform-style: preserve-3d;
+        }
+        
+        @keyframes iconSpin {
+            0%, 100% { 
+                transform: rotateY(0deg) rotateX(0deg) scale(1);
+                filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.3));
+            }
+            25% { 
+                transform: rotateY(90deg) rotateX(10deg) scale(1.1);
+                filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.5));
+            }
+            50% { 
+                transform: rotateY(180deg) rotateX(0deg) scale(1.05);
+                filter: drop-shadow(0 0 30px rgba(6, 182, 212, 0.4));
+            }
+            75% { 
+                transform: rotateY(270deg) rotateX(-10deg) scale(1.15);
+                filter: drop-shadow(0 0 50px rgba(99, 102, 241, 0.6));
+            }
+        }
+        
+        .feature-title {
+            font-size: 1.6rem; font-weight: 800; margin-bottom: 20px;
+            color: var(--light); text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        
+        .feature-description {
+            font-size: 1.1rem; line-height: 1.7; margin-bottom: 35px; opacity: 0.85;
+        }
+        
+        /* Enhanced 3D Buttons */
         .btn {
-            display: inline-block;
+            display: inline-block; 
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 15px 35px;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 600;
-            transition: all 0.3s;
+            color: white; padding: 20px 50px; text-decoration: none;
+            border-radius: 30px; font-weight: 700; font-size: 1.2rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; overflow: hidden; border: none; cursor: pointer;
+            transform-style: preserve-3d; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
         }
-        .btn:hover { transform: translateY(-3px); }
+        
+        .btn:hover {
+            transform: translateZ(20px) rotateX(5deg) scale(1.08);
+            box-shadow: 0 25px 60px rgba(99, 102, 241, 0.5), 0 0 60px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn i { margin-right: 10px; }
+        
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .features { grid-template-columns: 1fr; }
-            .hero { padding: 30px; }
-        }
-        .history-btn {
-            background: rgba(6, 182, 212, 0.2);
-            border: 1px solid rgba(6, 182, 212, 0.4);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 15px;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 0.9rem;
+            .hero { padding: 60px 40px; }
+            .hero-title { font-size: 2.8rem; }
+            .logo { font-size: 3.5rem; }
+            .features { grid-template-columns: 1fr; gap: 30px; }
+            nav ul { flex-direction: column; gap: 15px; }
+            .feature-card:hover { 
+                transform: translateZ(20px) rotateX(5deg) scale(1.03);
+            }
         }
     </style>
 </head>
 <body>
+    <div class="bg-animation"></div>
+    <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
     <div class="container">
         <header>
-            <div class="logo">🧞‍♂️ StudyGenie</div>
-            <p style="font-size: 1.2rem; color: var(--gray);">Your AI-Powered Study Assistant</p>
+            <div class="logo">StudyGenie</div>
+            <p style="font-size: 1.5rem; margin-bottom: 15px;">Ultimate AI-Powered Study Assistant</p>
+            <p style="color: var(--accent); font-size: 1.1rem;">🤖 Enhanced with Real 3D Animations • 🏆 Built for AIGNITION 2025</p>
         </header>
 
         <nav>
@@ -122,38 +335,109 @@
                 <li><a href="/upload"><i class="fas fa-file-pdf"></i> Summarizer</a></li>
                 <li><a href="/quiz"><i class="fas fa-brain"></i> Quiz</a></li>
                 <li><a href="/schedule"><i class="fas fa-calendar"></i> Planner</a></li>
+                <li><a href="/code"><i class="fas fa-code"></i> Code Helper</a></li>
                 <li><a href="/history"><i class="fas fa-history"></i> History</a></li>
             </ul>
         </nav>
 
         <main>
             <div class="hero">
-                <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 30px;">Transform Your Study Experience with AI</h2>
+                <h2 class="hero-title">Transform Your Study Experience with Real 3D AI</h2>
+                <p style="font-size: 1.4rem; text-align: center; margin-bottom: 60px; opacity: 0.9; max-width: 900px; margin-left: auto; margin-right: auto;">
+                    Experience the future of education with StudyGenie Ultimate - featuring stunning real 3D animations, 
+                    advanced AI capabilities, and immersive visual effects that revolutionize your learning journey.
+                </p>
 
                 <div class="features">
                     <div class="feature-card">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">📄</div>
-                        <h3>AI PDF Summarizer</h3>
-                        <p>Upload PDFs and get instant summaries</p>
-                        <a href="/upload" class="btn">Try Now</a>
+                        <div class="feature-icon">📚</div>
+                        <h3 class="feature-title">AI Document Summarizer</h3>
+                        <p class="feature-description">Upload PDFs and get intelligent, contextual summaries powered by advanced AI technology</p>
+                        <a href="/upload" class="btn"><i class="fas fa-rocket"></i>Try Summarizer</a>
                     </div>
 
                     <div class="feature-card">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">🧠</div>
-                        <h3>Quiz Generator</h3>
-                        <p>Create practice questions from any topic</p>
-                        <a href="/quiz" class="btn">Generate</a>
+                        <div class="feature-icon">🧠</div>
+                        <h3 class="feature-title">Smart Quiz Generator</h3>
+                        <p class="feature-description">Generate unlimited practice questions with varying difficulty levels</p>
+                        <a href="/quiz" class="btn"><i class="fas fa-magic"></i>Create Quiz</a>
                     </div>
 
                     <div class="feature-card">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">📊</div>
-                        <h3>Study Planner</h3>
-                        <p>Get personalized study schedules</p>
-                        <a href="/schedule" class="btn">Plan</a>
+                        <div class="feature-icon">📅</div>
+                        <h3 class="feature-title">AI Study Planner</h3>
+                        <p class="feature-description">Get personalized study schedules optimized for your learning pace</p>
+                        <a href="/schedule" class="btn"><i class="fas fa-calendar-alt"></i>Plan Studies</a>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">💻</div>
+                        <h3 class="feature-title">Code Helper Pro</h3>
+                        <p class="feature-description">Get expert assistance with programming in multiple languages</p>
+                        <a href="/code" class="btn"><i class="fas fa-code"></i>Code Help</a>
                     </div>
                 </div>
             </div>
         </main>
     </div>
+
+    <script>
+        // Enhanced 3D mouse parallax effect
+        document.addEventListener('mousemove', function(e) {
+            const particles = document.querySelectorAll('.particle');
+            const cards = document.querySelectorAll('.feature-card');
+            const header = document.querySelector('header');
+            const nav = document.querySelector('nav');
+            
+            const x = (e.clientX / window.innerWidth) - 0.5;
+            const y = (e.clientY / window.innerHeight) - 0.5;
+
+            // Enhanced particle movement
+            particles.forEach((particle, index) => {
+                const speed = (index + 1) * 1.5;
+                const rotateX = y * speed * 40;
+                const rotateY = x * speed * 40;
+                const translateZ = Math.sin(Date.now() * 0.001 + index) * 50;
+                
+                particle.style.transform = `
+                    translate3d(${x * speed * 20}px, ${y * speed * 20}px, ${translateZ}px) 
+                    rotateX(${rotateX}deg) 
+                    rotateY(${rotateY}deg)
+                `;
+            });
+
+            // 3D card tilt effect
+            cards.forEach((card) => {
+                const rect = card.getBoundingClientRect();
+                const cardX = (e.clientX - rect.left - rect.width / 2) / rect.width;
+                const cardY = (e.clientY - rect.top - rect.height / 2) / rect.height;
+                
+                if (Math.abs(cardX) < 1 && Math.abs(cardY) < 1) {
+                    card.style.transform = `
+                        perspective(1000px) 
+                        rotateX(${cardY * 15}deg) 
+                        rotateY(${cardX * 15}deg) 
+                        translateZ(${Math.abs(cardX + cardY) * 30}px)
+                    `;
+                }
+            });
+
+            // Header 3D effect
+            header.style.transform = `
+                perspective(1000px) 
+                rotateX(${y * 8}deg) 
+                rotateY(${x * 8}deg) 
+                translateZ(10px)
+            `;
+
+            // Nav 3D effect
+            nav.style.transform = `
+                perspective(1000px) 
+                rotateX(${y * 5}deg) 
+                rotateY(${x * 5}deg) 
+                translateZ(5px)
+            `;
+        });
+    </script>
 </body>
 </html>
