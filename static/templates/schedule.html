@@ -62,18 +62,18 @@
 
             <form id="scheduleForm">
                 <div class="form-group">
-                    <label style="color: var(--light); margin-bottom: 10px; display: block;">📖 Your Subjects (one per line):</label>
+                    <label style="color: var(--light); margin-bottom: 10px; display: block;">ðŸ“– Your Subjects (one per line):</label>
                     <textarea id="subjects" placeholder="Data Structures&#10;Algorithms&#10;Database Systems&#10;Computer Networks" required></textarea>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="form-group">
-                        <label style="color: var(--light); margin-bottom: 10px; display: block;">📆 Exam Date:</label>
+                        <label style="color: var(--light); margin-bottom: 10px; display: block;">ðŸ“† Exam Date:</label>
                         <input type="date" id="examDate" required>
                     </div>
 
                     <div class="form-group">
-                        <label style="color: var(--light); margin-bottom: 10px; display: block;">⏰ Hours per Day:</label>
+                        <label style="color: var(--light); margin-bottom: 10px; display: block;">â° Hours per Day:</label>
                         <select id="hoursPerDay">
                             <option value="2">2 hours</option>
                             <option value="4" selected>4 hours</option>
@@ -89,7 +89,7 @@
             </form>
 
             <div id="scheduleResults" style="display:none;">
-                <h3 style="text-align: center; margin: 30px 0;">📊 Your Personalized Study Plan</h3>
+                <h3 style="text-align: center; margin: 30px 0;">ðŸ“Š Your Personalized Study Plan</h3>
                 <div id="scheduleList"></div>
                 <button onclick="saveScheduleToHistory()" class="save-schedule-btn">
                     <i class="fas fa-save"></i> Save to History
@@ -173,7 +173,7 @@
                             </div>
                         </div>
                         <div style="padding: 15px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 12px;">
-                            💡 ${item.study_tips}
+                            ðŸ’¡ ${item.study_tips}
                         </div>
                     `;
                     scheduleList.appendChild(scheduleItem);
@@ -198,8 +198,8 @@
                     schedule: currentSchedule
                 })
             }).then(r => r.json()).then(data => {
-                if (data.success) alert('✅ Schedule saved to history!');
-                else alert('❌ Failed to save schedule');
+                if (data.success) alert('âœ… Schedule saved to history!');
+                else alert('âŒ Failed to save schedule');
             });
         }
 

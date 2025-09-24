@@ -46,7 +46,7 @@
             <h2><i class="fas fa-history"></i> Your Study History</h2>
 
             <div class="history-section">
-                <h3>📄 Summaries</h3>
+                <h3>ðŸ“„ Summaries</h3>
                 {% if summaries and summaries|length > 0 %}
                     {% for item in summaries %}
                     <div class="history-item">
@@ -68,7 +68,7 @@
             </div>
 
             <div class="history-section">
-                <h3>🧠 Quizzes</h3>
+                <h3>ðŸ§  Quizzes</h3>
                 {% if quizzes and quizzes|length > 0 %}
                     {% for item in quizzes %}
                     <div class="history-item">
@@ -91,7 +91,7 @@
             </div>
 
             <div class="history-section">
-                <h3>📅 Schedules</h3>
+                <h3>ðŸ“… Schedules</h3>
                 {% if schedules and schedules|length > 0 %}
                     {% for item in schedules %}
                     <div class="history-item">
@@ -103,8 +103,8 @@
                         </div>
                         {% for s in item.schedule %}
                         <div style="margin: 15px 0; padding: 10px; background: rgba(6, 182, 212, 0.1); border-radius: 8px;">
-                            <strong>{{ s.subject }}</strong> ({{ s.priority }}) - {{ s.daily_hours }}h/day → {{ s.recommended_hours }}h total
-                            <div style="font-size: 0.9rem; margin-top: 5px; color: var(--gray);">💡 {{ s.study_tips }}</div>
+                            <strong>{{ s.subject }}</strong> ({{ s.priority }}) - {{ s.daily_hours }}h/day â†’ {{ s.recommended_hours }}h total
+                            <div style="font-size: 0.9rem; margin-top: 5px; color: var(--gray);">ðŸ’¡ {{ s.study_tips }}</div>
                         </div>
                         {% endfor %}
                         <a href="#" onclick="exportHistorySchedule({{ loop.index0 }}); return false;" class="download-link">
